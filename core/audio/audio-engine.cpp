@@ -127,6 +127,6 @@ void AudioEngine::MeteringCallback::onMeterData(const common::MeterSnapshot& sna
 
 #else
 // Non-Windows platforms: This file should not be compiled
-#error "Audio engine implementation is only supported on Windows platforms. This file should not be compiled on non-Windows systems."
+#error "Audio engine implementation is Windows-only. This file should not be compiled on non-Windows systems."
 #endif // _WIN32
 

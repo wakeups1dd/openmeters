@@ -9,7 +9,7 @@
 #ifdef _WIN32
 #include "wasapi-capture.h"
 #else
-#error "Audio engine currently requires Windows WASAPI. Platform-specific implementations not yet available."
+#error "Audio engine is Windows-only. This file should not be compiled on non-Windows systems."
 #endif
 
 namespace openmeters::core::audio {
