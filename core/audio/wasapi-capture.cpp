@@ -274,13 +274,15 @@ void WasapiCapture::captureThread() {
         
         if (FAILED(hr)) {
             if (hr == AUDCLNT_E_BUFFER_ERROR) {
-                // Buffer lost, try to recover
-                m_captureClient->ReleaseBuffer(0);
+                // Buffer lost, try to recover by releasing any partial buffer
+                // Note: GetBuffer failed, so we don't have a valid buffer to release
+                // Just continue and try again on next iteration
             }
             continue;
         }
         
         if (numFramesAvailable == 0) {
+            // No data available, release buffer
             m_captureClient->ReleaseBuffer(0);
             continue;
         }
