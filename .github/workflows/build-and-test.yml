@@ -1,0 +1,49 @@
+name: Build and Test
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+
+jobs:
+  build:
+    name: Build
+    runs-on: windows-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Setup MSBuild
+      uses: microsoft/setup-msbuild@v1.1
+      
+    - name: Configure CMake
+      run: cmake -B build -G "Visual Studio 17 2022" -A x64
+      shell: cmd
+      
+    - name: Build
+      run: cmake --build build --config Release
+      shell: cmd
+      
+    - name: Upload build artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: openmeters-exe
+        path: build/bin/Release/openmeters.exe
+        
+  # Note: Runtime tests cannot run on GitHub Actions
+  # because the runners don't have audio devices.
+  # The executable must be downloaded and tested locally.
+  
+  # Future: Add unit tests for meters (no audio device needed)
+  # test-meters:
+  #   name: Test Meters (Unit Tests)
+  #   runs-on: windows-latest
+  #   steps:
+  #   - uses: actions/checkout@v4
+  #   - name: Build tests
+  #     run: cmake --build build --target test_meters
+  #   - name: Run tests
+  #     run: ctest --test-dir build
+

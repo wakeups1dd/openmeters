@@ -1,0 +1,54 @@
+name: Build OpenMeters
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+  workflow_dispatch:  # Allows manual triggering
+
+jobs:
+  build-windows:
+    name: Build Windows x64
+    runs-on: windows-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Configure CMake
+      run: |
+        cmake -B build -G "Visual Studio 17 2022" -A x64
+      shell: cmd
+      
+    - name: Build Release
+      run: |
+        cmake --build build --config Release
+      shell: cmd
+      
+    - name: Verify executable exists
+      run: |
+        if not exist "build\bin\Release\openmeters.exe" (
+          echo ERROR: Executable not found!
+          exit /b 1
+        )
+        dir build\bin\Release\openmeters.exe
+      shell: cmd
+      
+    - name: Upload artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: openmeters-windows-x64
+        path: build/bin/Release/openmeters.exe
+        retention-days: 30
+        
+    - name: Build summary
+      run: |
+        echo ## Build Summary >> $GITHUB_STEP_SUMMARY
+        echo - ✅ Build completed successfully >> $GITHUB_STEP_SUMMARY
+        echo - 📦 Executable: `openmeters.exe` >> $GITHUB_STEP_SUMMARY
+        echo - 💾 Download from Artifacts tab >> $GITHUB_STEP_SUMMARY
+        echo. >> $GITHUB_STEP_SUMMARY
+        echo **Note**: This executable can be run on any Windows 10+ machine. >> $GITHUB_STEP_SUMMARY
+        echo GitHub Actions runners do not have audio devices, so runtime testing must be done locally. >> $GITHUB_STEP_SUMMARY
+
