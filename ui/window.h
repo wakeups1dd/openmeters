@@ -5,6 +5,7 @@
 #include <windows.h>
 #include <d3d11.h>
 #include <memory>
+#include <mutex>
 
 // Forward declarations
 struct ImGuiContext;
