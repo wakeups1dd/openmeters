@@ -66,35 +66,37 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
         
         // Create audio engine
         core::audio::AudioEngine engine;
-        if (!engine.initialize()) {
-            LOG_ERROR("Failed to initialize audio engine");
-            MessageBoxA(nullptr, "Failed to initialize audio engine. Check audio device.", 
-                       "OpenMeters Error", MB_OK | MB_ICONERROR);
-            window.shutdown();
-            common::Logger::shutdown();
-            return 1;
+        bool audioAvailable = engine.initialize();
+        if (!audioAvailable) {
+            LOG_WARNING("Audio engine failed to initialize. Meters will show zero until audio is available.");
+            MessageBoxA(nullptr, 
+                "Audio capture is unavailable.\n\n"
+                "This can happen if:\n"
+                "- No audio is currently playing on your system\n"
+                "- Your audio device is in use by another application\n\n"
+                "The meter window will open, but meters will show zero.\n"
+                "Try playing some audio and restarting the app.",
+                "OpenMeters - Audio Warning", MB_OK | MB_ICONWARNING);
         }
         
-        LOG_INFO("Audio format: " + std::to_string(engine.getFormat().sampleRate) + " Hz, " +
-                 std::to_string(engine.getFormat().channelCount) + " channel(s)");
-        
-        // Register callback
         GuiCallback callback(&window);
-        engine.registerCallback(&callback);
         
-        // Start capture
-        if (!engine.start()) {
-            LOG_ERROR("Failed to start audio capture");
-            MessageBoxA(nullptr, "Failed to start audio capture", "OpenMeters Error", MB_OK | MB_ICONERROR);
-            engine.shutdown();
-            window.shutdown();
-            common::Logger::shutdown();
-            return 1;
+        if (audioAvailable) {
+            LOG_INFO("Audio format: " + std::to_string(engine.getFormat().sampleRate) + " Hz, " +
+                     std::to_string(engine.getFormat().channelCount) + " channel(s)");
+            
+            // Register callback
+            engine.registerCallback(&callback);
+            
+            // Start capture
+            if (!engine.start()) {
+                LOG_WARNING("Failed to start audio capture");
+            } else {
+                LOG_INFO("Audio capture started");
+            }
         }
         
-        LOG_INFO("Audio capture started");
-        
-        // Run main loop
+        // Run main loop (window always opens)
         window.run();
         
         // Cleanup
