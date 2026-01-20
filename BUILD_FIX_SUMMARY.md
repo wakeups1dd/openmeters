@@ -86,3 +86,5 @@ The build should now work correctly. If you see the error again:
 - ✅ Already guarded: `core/audio/audio-engine.cpp`
 - ✅ Already configured: `CMakeLists.txt`
 
+
+

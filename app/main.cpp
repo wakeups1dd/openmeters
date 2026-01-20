@@ -1,3 +1,5 @@
+#ifdef _WIN32
+
 #include "../core/audio/audio-engine.h"
 #include "../common/meter-values.h"
 #include <iostream>
@@ -83,4 +85,9 @@ int main() {
     std::cout << "Shutdown complete.\n";
     return 0;
 }
+
+#else
+// Non-Windows platforms: This application is Windows-only
+#error "OpenMeters is Windows-only. This application requires Windows and WASAPI."
+#endif // _WIN32
 

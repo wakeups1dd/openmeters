@@ -129,3 +129,5 @@ When adding Linux/macOS support:
 
 The codebase is now properly guarded against cross-platform compilation issues. Windows-specific code will only compile on Windows, and clear error messages guide developers if they accidentally try to build on other platforms.
 
+
+

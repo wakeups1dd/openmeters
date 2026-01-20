@@ -17,17 +17,20 @@ set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
 
 # Windows-specific settings
-if(WIN32)
-    # Use Windows SDK
-    set(CMAKE_SYSTEM_VERSION 10.0)
-    
-    # Link against Windows audio libraries
-    set(WINDOWS_AUDIO_LIBS
-        ole32
-        oleaut32
-        avrt
-    )
+# OpenMeters is Windows-only and requires WASAPI
+if(NOT WIN32)
+    message(FATAL_ERROR "OpenMeters is Windows-only. This project requires Windows 10+ and WASAPI.")
 endif()
+
+# Use Windows SDK
+set(CMAKE_SYSTEM_VERSION 10.0)
+
+# Link against Windows audio libraries (WASAPI dependencies)
+set(WINDOWS_AUDIO_LIBS
+    ole32      # COM interfaces
+    oleaut32   # COM automation
+    avrt       # Multimedia Class Scheduler Service (for real-time audio)
+)
 
 # Include directories
 include_directories(
@@ -76,20 +79,26 @@ else()
     message(FATAL_ERROR "OpenMeters is Windows-only. This project requires Windows and WASAPI.")
 endif()
 
-# Application executable
-add_executable(openmeters
-    app/main.cpp
-)
-target_link_libraries(openmeters PRIVATE
-    audio_engine
-    meters
-    common
-)
+# Application executable (Windows-only)
+if(WIN32)
+    add_executable(openmeters
+        app/main.cpp
+    )
+    target_link_libraries(openmeters PRIVATE
+        audio_engine
+        meters
+        common
+    )
+else()
+    message(FATAL_ERROR "OpenMeters executable is Windows-only. This project requires Windows and WASAPI.")
+endif()
 
-# Install rules (optional)
-install(TARGETS openmeters
-    RUNTIME DESTINATION bin
-)
+# Install rules (optional, Windows-only)
+if(WIN32)
+    install(TARGETS openmeters
+        RUNTIME DESTINATION bin
+    )
+endif()
 
 # Compiler-specific options
 if(MSVC)
