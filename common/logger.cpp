@@ -16,7 +16,7 @@ bool Logger::initialize(
     LogLevel minLevel,
     bool enableConsole
 ) {
-    std::lock_guard<std::mutex> lock(s_logMutex);
+    std::lock_guard<std::recursive_mutex> lock(s_logMutex);
     
     if (s_initialized) {
         return true; // Already initialized
@@ -53,7 +53,7 @@ bool Logger::initialize(
 }
 
 void Logger::shutdown() {
-    std::lock_guard<std::mutex> lock(s_logMutex);
+    std::lock_guard<std::recursive_mutex> lock(s_logMutex);
     
     if (s_initialized && s_logFile) {
         info("Logger shutting down");
@@ -98,12 +98,12 @@ void Logger::fatal(const std::string& message, const char* file, int line) {
 }
 
 void Logger::setMinLevel(LogLevel level) {
-    std::lock_guard<std::mutex> lock(s_logMutex);
+    std::lock_guard<std::recursive_mutex> lock(s_logMutex);
     s_minLevel = level;
 }
 
 LogLevel Logger::getMinLevel() {
-    std::lock_guard<std::mutex> lock(s_logMutex);
+    std::lock_guard<std::recursive_mutex> lock(s_logMutex);
     return s_minLevel;
 }
 
@@ -113,7 +113,7 @@ void Logger::writeLog(
     const char* file,
     int line
 ) {
-    std::lock_guard<std::mutex> lock(s_logMutex);
+    std::lock_guard<std::recursive_mutex> lock(s_logMutex);
     
     if (!s_initialized) {
         // Fallback to console if logger not initialized
