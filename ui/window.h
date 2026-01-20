@@ -10,6 +10,7 @@
 // Forward declarations
 struct ImGuiContext;
 struct ImGuiIO;
+struct ImVec2;
 
 namespace openmeters::ui {
 
