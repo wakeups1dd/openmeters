@@ -35,6 +35,7 @@ set(WINDOWS_AUDIO_LIBS
 # Include directories
 include_directories(
     ${CMAKE_SOURCE_DIR}
+    ${CMAKE_SOURCE_DIR}/third_party/include
 )
 
 # Common library
